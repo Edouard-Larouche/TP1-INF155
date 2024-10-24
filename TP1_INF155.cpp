@@ -12,23 +12,37 @@
 #define MAXCOL  75
 #define MAXTEMP 500			  //la température absolue maximale permise
 #define COL_DROITE 80
+#define EPSILON 1.0
 
 typedef double t_matrice[MAXLIG][MAXCOL];   //type-tableau pour les 2 plaques
+
 typedef int t_matbool[MAXLIG][MAXCOL];      //type-tableau pour les positions fixes
 
 FILE* lire_nom_fich();
 void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
 	int* dimy, int* dimx, double* mint, double* maxt);
 
+void lire_fichier(FILE * fichier, t_matrice plaque, t_matbool pos_fixes,
+	int* dimy, int* dimx, double* mint, double* maxt);
+
+int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
+	t_matbool p_fixes, int dimy, int dimx, int mode, double epsilon, double coeff);
+
+double moyenne_voisins(const t_matrice plaque, int y, int x, int mode);
+
 
 void main() {
-	int dimy, dimx;
+	int dimy, dimx, mode = 4, coeff = 0.5;
 	double mint, maxt;
+
 	t_matrice plaque;
 	t_matbool pos_fixes;
+	t_matrice nouv_plaque;
 	//variable pointeur-fichier
 	FILE* fichier = lire_nom_fich();
 	lire_fichier(fichier, plaque, pos_fixes, &dimy, &dimx, &mint, &maxt);
+	calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes, dimy, dimx, mode, EPSILON, coeff);
+
 }
 
 
@@ -81,15 +95,54 @@ void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
 
 			// Fixer les bords de la matrice comme positions fixes
 			if (i == 0 || i == (*dimy - 1) || j == 0 || j == (*dimx - 1)) {
-				pos_fixes[i][j] = true;
+				pos_fixes[i][j] = 1;
 			}
 			else {
-				pos_fixes[i][j] = false;
+				pos_fixes[i][j] = 0;
 			}
 		}
 	}
 }
 
+double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
 
+	double moyenne = 0;
+	double valeur = 0;
+	double somme = 0;
 
+	if (mode = 4) {
+		valeur += plaque[y + 1][x];
+		valeur += plaque[y + -1][x];
+		valeur += plaque[y][x + 1];
+		valeur += plaque[y][x - 1];
 
+		moyenne = valeur / 4;
+		return moyenne;
+	}
+
+	if (mode = 8) {
+		for (y = -1; y <= 1; ++y) {
+			for (x = -1; x <= 1; ++x) {
+				if (!plaque[0][0]) {
+					somme = somme + plaque[y][x];
+				}
+			}
+		}
+		moyenne = (somme / 4);
+		return moyenne;
+	}
+}
+
+int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
+	t_matbool pos_fixes, int dimy, int dimx, int mode, double epsilon, double coeff) {
+	int j, i;
+
+	for (i = 0; i < dimy; ++i) {
+		for (j = 0; j < dimx; ++j) {
+			if (pos_fixes[i, j] == 0) {
+				nouv_plaque[i][j] = (plaque[i][j] * coeff) + (moyenne_voisins(plaque,i , j, mode)) * (1.0 - coeff);
+			}
+		}
+	}
+	return 0;
+}
