@@ -102,7 +102,8 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
 	int i;
 	int j;
 
-	if (mode=4) {
+	if (mode=4) { // Si la méthode est 4 voisin.
+
 	valeur += plaque[y + 1][x];
 	valeur += plaque[y + -1][x];
 	valeur += plaque[y][x + 1];
@@ -110,23 +111,23 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
 
 	moyenne = valeur / 4;
 	return moyenne;
+
 	}
 
-	if (mode = 8) {
-		for ( y = -1; i < y; ++y) {
+	if (mode = 8) { // Si la méthode est 8 voisin.
+		for ( y = -1; i <= 1; ++y) {
 			for (x = -1; x <=1 ; ++x) {
-				if (!plaque[0][0]) {
+				/*Effectue la somme des cases de la plaque sauf a l'emplacement 0 0. */
+				if (!plaque[0][0]) { 
 					somme = somme + plaque[y][x];
 				}
 			}
 		}
 
-		moyenne = (somme / 4);
-		return moyenne;
+		moyenne = (somme / 4); // Calcul de la moyenne.
+		return moyenne; // Retour de la moyenne.
 
 	}
-
-
 
 }
 
