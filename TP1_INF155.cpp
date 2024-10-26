@@ -13,6 +13,9 @@
 #define MAXTEMP 500			  //la température absolue maximale permise
 #define COL_DROITE 80
 #define EPSILON 1.0
+#define ESPACEMENT_COLONES 5
+#define ESPACEMENT_RANGEES 5
+
 
 typedef double t_matrice[MAXLIG][MAXCOL];   //type-tableau pour les 2 plaques
 
@@ -33,6 +36,8 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode);
 double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
 	int dimy, int dimx, double* mint, double* maxt);
 
+int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
+	double* mint, double* maxt, int mode, double epsilon, double coeff);
 
 void main() {
 	int dimy, dimx, mode = 4, coeff = 0.5;
@@ -40,14 +45,13 @@ void main() {
 
 	t_matrice plaque;
 	t_matbool pos_fixes;
-	t_matrice nouv_plaque;
 	//variable pointeur-fichier
 	FILE* fichier = lire_nom_fich();
 
 	lire_fichier(fichier, plaque, pos_fixes, &dimy, &dimx, &mint, &maxt);
-	calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes, dimy, dimx, mode, EPSILON, coeff);
-	copier_nouv_plaque(plaque, nouv_plaque,
-		dimy, dimx, &mint, &maxt);
+	simulation(plaque, pos_fixes, dimy, dimx,
+		&mint, &maxt, mode, EPSILON, coeff);
+	
 
 }
 
@@ -190,4 +194,31 @@ double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
 		}
 		return somme / (dimx * dimy);
 	}
+}
+
+int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
+	double* mint, double* maxt, int mode, double epsilon, double coeff) {
+	int i, j;
+	int iteration = 0;
+	int equilibre = 0;
+	int moyenne;
+	t_matrice nouv_plaque;
+
+	do {
+		equilibre = calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes, dimy, dimx, mode, EPSILON, coeff);
+		moyenne = copier_nouv_plaque(plaque, nouv_plaque,
+			dimy, dimx, mint, maxt);
+
+		for (i = 0; i < dimy; ++i) {
+			for (j = 0; j < dimx; ++j) {
+				gotoxy(j * ESPACEMENT_COLONES,
+					i * ESPACEMENT_RANGEES);
+				printf("%lf", plaque[i][j]);
+			}
+		}
+		iteration++;
+
+		printf("Max : %lf | Min : %lf | Moyenne : %lf", mint, maxt, moyenne);
+	} while (equilibre != 1);
+	return iteration;
 }
