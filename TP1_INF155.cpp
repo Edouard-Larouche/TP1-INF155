@@ -138,7 +138,7 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
 				}
 			}
 		}
-		moyenne = (somme / 4);
+		moyenne = (somme / 8);
 		return moyenne;
 	}
 }
