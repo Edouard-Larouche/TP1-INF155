@@ -15,6 +15,11 @@
 #define EPSILON 1.0
 #define ESPACEMENT_COLONES 5
 #define ESPACEMENT_RANGEES 5
+#define NB_COUL  15 
+const int COULEURS[NB_COUL] = { RED, LIGHTRED, MAGENTA, LIGHTMAGENTA, BLUE, 
+LIGHTBLUE, CYAN, LIGHTCYAN, GREEN, LIGHTGREEN, DARKGRAY, BROWN,
+YELLOW, LIGHTGRAY, WHITE };
+
 
 
 typedef double t_matrice[MAXLIG][MAXCOL];   //type-tableau pour les 2 plaques
@@ -22,8 +27,6 @@ typedef double t_matrice[MAXLIG][MAXCOL];   //type-tableau pour les 2 plaques
 typedef int t_matbool[MAXLIG][MAXCOL];      //type-tableau pour les positions fixes
 
 FILE* lire_nom_fich();
-void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
-	int* dimy, int* dimx, double* mint, double* maxt);
 
 void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
 	int* dimy, int* dimx, double* mint, double* maxt);
@@ -39,6 +42,8 @@ double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
 int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
 	double* mint, double* maxt, int mode, double epsilon, double coeff);
 
+void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt);
+
 void main() {
 	int dimy, dimx, mode = 4;
 	double coeff = 0.5, mint, maxt;
@@ -51,6 +56,8 @@ void main() {
 	lire_fichier(fichier, plaque, pos_fixes, &dimy, &dimx, &mint, &maxt);
 	simulation(plaque, pos_fixes, dimy, dimx,
 		&mint, &maxt, mode, EPSILON, coeff);
+
+	colorage_plaque(plaque, dimy, dimx, mint, maxt);
 
 
 }
@@ -119,6 +126,7 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
 	double moyenne = 0;
 	double valeur = 0;
 	double somme = 0;
+	int i, j, n = 0;
 
 	if (mode == 4) {
 		valeur += plaque[y + 1][x];
@@ -130,17 +138,18 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
 		return moyenne;
 	}
 
-	if (mode == 8) {
-		for (y = -1; y <= 1; ++y) {
-			for (x = -1; x <= 1; ++x) {
-				if (!plaque[0][0]) {
-					somme += plaque[y][x];
+	else if (mode == 8) {
+		for (int i = -1; i <= 1; i++) {
+			for (int j = -1; j <= 1; j++) {
+				if (i != 0 || j != 0) {
+					somme += plaque[y + i][x + j];
+					n++;
 				}
 			}
 		}
-		moyenne = (somme / 8);
-		return moyenne;
+		return somme / n;
 	}
+	return somme;
 }
 
 int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
@@ -176,7 +185,7 @@ double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
 
 	int j, i;
 	int equilibre = 1;
-	int somme = 0;
+	double somme = 0.0;
 
 	for (i = 0; i < dimy; ++i) {
 		for (j = 0; j < dimx; ++j) {
@@ -201,24 +210,44 @@ int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
 	int i, j;
 	int iteration = 0;
 	int equilibre = 0;
-	int moyenne;
+	double moyenne;
 	t_matrice nouv_plaque;
 
 	do {
-		equilibre = calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes, dimy, dimx, mode, EPSILON, coeff);
-		moyenne = copier_nouv_plaque(plaque, nouv_plaque,
-			dimy, dimx, mint, maxt);
+		int equilibre = calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes, dimy, dimx, mode, epsilon, coeff);
+		moyenne = copier_nouv_plaque(plaque, nouv_plaque, dimy, dimx, mint, maxt);
 
-		for (i = 0; i < dimy; ++i) {
-			for (j = 0; j < dimx; ++j) {
-				gotoxy(j * ESPACEMENT_COLONES,
-					i * ESPACEMENT_RANGEES);
+		for (int i = 0; i < dimy; ++i) {
+			for (int j = 0; j < dimx; ++j) {
+				gotoxy(j * ESPACEMENT_COLONES, i * ESPACEMENT_RANGEES);
 				printf("%lf", plaque[i][j]);
 			}
 		}
 		iteration++;
+		printf("Max : %lf | Min : %lf | Moyenne : %lf\n", *maxt, *mint, moyenne);
+	} while (!equilibre);
 
-		printf("Max : %lf | Min : %lf | Moyenne : %lf", mint, maxt, moyenne);
-	} while (equilibre != 1);
 	return iteration;
+}
+
+void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt) {
+	
+	int i;
+	int j;
+	int n_couleur; 
+
+	double iteration = (maxt - mint) / NB_COUL;
+
+	for (i = 0; i < dimy; i++) {
+		for (j = 0; j < dimx; j++) {
+
+			n_couleur = ((plaque[i][j] - mint) / iteration);
+
+			if (n_couleur >= NB_COUL) {
+				n_couleur = NB_COUL - 1;  // Pour éviter dépassement
+			}
+			textbackground(COULEURS[n_couleur]);
+		}
+	}
+	textbackground(COULEURS[BLACK]);
 }
