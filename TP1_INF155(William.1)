@@ -13,8 +13,8 @@
 #define MAXTEMP 10000			  // La température absolue maximale permise
 #define COL_DROITE 80
 #define EPSILON 1.0
-#define ESPACEMENT_COLONES 5
-#define ESPACEMENT_RANGEES 5
+#define ESPACEMENT_COLONES 3 // Pour permettre une lecture plus facile
+#define ESPACEMENT_RANGEES 3   // Pour permettre une lecture plus facile
 #define NB_COUL  15 
 const int COULEURS[NB_COUL] = { RED, LIGHTRED, MAGENTA, LIGHTMAGENTA, BLUE,
 LIGHTBLUE, CYAN, LIGHTCYAN, GREEN, LIGHTGREEN, DARKGRAY, BROWN,
@@ -214,8 +214,8 @@ int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, double
 
         for (int i = 0; i < dimy; ++i) {
             for (int j = 0; j < dimx; ++j) {
-                gotoxy(j * ESPACEMENT_COLONES,
-                    i * ESPACEMENT_RANGEES);
+                gotoxy(j * ESPACEMENT_RANGEES,
+                    i * ESPACEMENT_COLONES);
                 printf("%lf", plaque[i][j]);
             }
         }
