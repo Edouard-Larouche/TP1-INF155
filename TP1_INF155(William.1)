@@ -38,6 +38,8 @@ int main() { // Utilisez int main() au lieu de void main()
     t_matrice plaque;
     t_matbool pos_fixes;
 
+    textmode(55);
+
     // Variable pointeur-fichier
     FILE* fichier = lire_nom_fich();
 
@@ -239,6 +241,7 @@ void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, do
             textbackground(COULEURS[n_couleur]);
             printf("  "); // Imprime la couleur
         }
+        printf("\n");
     }
     textbackground(COULEURS[BLACK]);
 }
