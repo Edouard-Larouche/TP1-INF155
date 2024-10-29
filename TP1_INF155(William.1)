@@ -12,27 +12,47 @@
 #define MAXCOL  75
 #define MAXTEMP 500			  //la température absolue maximale permise
 #define COL_DROITE 80
+#define EPSILON 1.0
+#define ESPACEMENT_COLONES 5
+#define ESPACEMENT_RANGEES 5
+
 
 typedef double t_matrice[MAXLIG][MAXCOL];   //type-tableau pour les 2 plaques
 
 typedef int t_matbool[MAXLIG][MAXCOL];      //type-tableau pour les positions fixes
 
 FILE* lire_nom_fich();
+void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
+	int* dimy, int* dimx, double* mint, double* maxt);
 
 void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
 	int* dimy, int* dimx, double* mint, double* maxt);
 
+int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
+	t_matbool p_fixes, int dimy, int dimx, int mode, double epsilon, double coeff);
+
+double moyenne_voisins(const t_matrice plaque, int y, int x, int mode);
+
+double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
+	int dimy, int dimx, double* mint, double* maxt);
+
+int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
+	double* mint, double* maxt, int mode, double epsilon, double coeff);
 
 void main() {
-	int dimy, dimx;
-	double mint, maxt;
+	int dimy, dimx, mode = 4;
+	double coeff = 0.5, mint, maxt;
+
 	t_matrice plaque;
 	t_matbool pos_fixes;
 	//variable pointeur-fichier
-
 	FILE* fichier = lire_nom_fich();
 
 	lire_fichier(fichier, plaque, pos_fixes, &dimy, &dimx, &mint, &maxt);
+	simulation(plaque, pos_fixes, dimy, dimx,
+		&mint, &maxt, mode, EPSILON, coeff);
+
+
 }
 
 
@@ -85,49 +105,120 @@ void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
 
 			// Fixer les bords de la matrice comme positions fixes
 			if (i == 0 || i == (*dimy - 1) || j == 0 || j == (*dimx - 1)) {
-				pos_fixes[i][j] = true;
+				pos_fixes[i][j] = 1;
 			}
 			else {
-				pos_fixes[i][j] = false;
+				pos_fixes[i][j] = 0;
 			}
 		}
 	}
 }
 
 double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
-	
+
 	double moyenne = 0;
 	double valeur = 0;
 	double somme = 0;
-	int i;
-	int j;
 
-	if (mode=4) { // Si la méthode est 4 voisin.
+	if (mode == 4) {
+		valeur += plaque[y + 1][x];
+		valeur += plaque[y + -1][x];
+		valeur += plaque[y][x + 1];
+		valeur += plaque[y][x - 1];
 
-	valeur += plaque[y + 1][x];
-	valeur += plaque[y + -1][x];
-	valeur += plaque[y][x + 1];
-	valeur += plaque[y][x-1];
-
-	moyenne = valeur / 4;
-	return moyenne;
-
+		moyenne = valeur / 4;
+		return moyenne;
 	}
 
-	if (mode = 8) { // Si la méthode est 8 voisin.
-		for ( y = -1; i <= 1; ++y) {
-			for (x = -1; x <=1 ; ++x) {
-				/*Effectue la somme des cases de la plaque sauf a l'emplacement 0 0. */
-				if (!plaque[0][0]) { 
-					somme = somme + plaque[y][x];
+	if (mode == 8) {
+		for (y = -1; y <= 1; ++y) {
+			for (x = -1; x <= 1; ++x) {
+				if (!plaque[0][0]) {
+					somme += plaque[y][x];
 				}
 			}
 		}
+		moyenne = (somme / 8);
+		return moyenne;
+	}
+}
 
-		moyenne = (somme / 4); // Calcul de la moyenne.
-		return moyenne; // Retour de la moyenne.
+int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
+	t_matbool pos_fixes, int dimy, int dimx, int mode, double epsilon, double coeff) {
+	int j, i;
+	int equilibre = 1;
 
+	for (i = 0; i < dimy; ++i) {
+		for (j = 0; j < dimx; ++j) {
+			if (pos_fixes[i][j] == 0) {
+				nouv_plaque[i][j] = (plaque[i][j] * coeff) + (moyenne_voisins(plaque, i, j, mode)) * (1.0 - coeff);
+				//si cette valeur depasse la difference epsilon
+				if (plaque[i][j] - nouv_plaque[i][j] <= epsilon) {
+					equilibre = 0;
+				}
+			}
+			else {
+				nouv_plaque[i][j] = plaque[i][j];
+			}
+		}
+	}
+	if (equilibre == 0) {
+		return 0;
+	}
+	else {
+		return 1;
 	}
 
 }
 
+double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
+	int dimy, int dimx, double* mint, double* maxt) {
+
+	int j, i;
+	int equilibre = 1;
+	int somme = 0;
+
+	for (i = 0; i < dimy; ++i) {
+		for (j = 0; j < dimx; ++j) {
+			plaque[i][j] = nouv_plaque[i][j];
+
+			// Mettre à jour les températures min et max
+			if (plaque[i][j] < *mint) {
+				*mint = plaque[i][j];
+			}
+			if (plaque[i][j] > *maxt) {
+				*maxt = plaque[i][j];
+			}
+
+			somme += plaque[i][j];
+		}
+	}
+	return somme / (dimx * dimy);
+}
+
+int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
+	double* mint, double* maxt, int mode, double epsilon, double coeff) {
+	int i, j;
+	int iteration = 0;
+	int equilibre = 0;
+	int moyenne;
+	t_matrice nouv_plaque;
+
+	do {
+		equilibre = calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes, dimy, dimx, mode, EPSILON, coeff);
+		moyenne = copier_nouv_plaque(plaque, nouv_plaque,
+			dimy, dimx, mint, maxt);
+
+		for (i = 0; i < dimy; ++i) {
+			for (j = 0; j < dimx; ++j) {
+				gotoxy(j * ESPACEMENT_COLONES,
+					i * ESPACEMENT_RANGEES);
+				printf("%lf", plaque[i][j]);
+			}
+		}
+		iteration++;
+
+		printf("Max : %lf | Min : %lf | Moyenne : %lf", mint, maxt, moyenne);
+	} while (equilibre != 1);
+	return iteration;
+}
