@@ -25,13 +25,21 @@ typedef double t_matrice[MAXLIG][MAXCOL];   // Type-tableau pour les 2 plaques
 typedef int t_matbool[MAXLIG][MAXCOL];      // Type-tableau pour les positions fixes
 
 FILE* lire_nom_fich();
-void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx, double* mint, double* maxt);
-int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque, t_matbool p_fixes, int dimy, int dimx, int mode, double epsilon, double coeff);
+void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes
+    , int* dimy, int* dimx, double* mint, double* maxt);
+int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
+    t_matbool p_fixes, int dimy, int dimx, int mode, double epsilon,
+    double coeff);
 double moyenne_voisins(const t_matrice plaque, int y, int x, int mode);
-double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque, int dimy, int dimx, double* mint, double* maxt);
-int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, double* mint, double* maxt, int mode, double epsilon, double coeff);
-void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt);
-unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init, t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx, double* mint, double* maxt);
+double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
+    int dimy, int dimx, double* mint, double* maxt);
+int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
+    double* mint, double* maxt, int mode, double epsilon, double coeff);
+void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint,
+    double maxt);
+unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init,
+    t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx, double* mint,
+    double* maxt);
 
 int main() {
     int dimy, dimx, mode = 4;
@@ -72,7 +80,8 @@ FILE* lire_nom_fich() {
     return ptr_de_fichier;
 }
 
-void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx, double* mint, double* maxt) {
+void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
+    int* dimy, int* dimx, double* mint, double* maxt) {
     // Lecture des dimensions de la matrice
     fscanf(fichier, "%d %d", dimy, dimx);
 
@@ -156,7 +165,8 @@ int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
     for (i = 0; i < dimy; ++i) {
         for (j = 0; j < dimx; ++j) {
             if (pos_fixes[i][j] == 0) {
-                nouv_plaque[i][j] = (plaque[i][j] * coeff) + (moyenne_voisins(plaque, i, j, mode)) * (1.0 - coeff);
+                nouv_plaque[i][j] = (plaque[i][j] * coeff) +
+                    (moyenne_voisins(plaque, i, j, mode)) * (1.0 - coeff);
                 // Si la différence dépasse epsilon
                 if ((plaque[i][j] - nouv_plaque[i][j]) > epsilon) {
                     equilibre = 0;
@@ -176,7 +186,9 @@ int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
     return 1;
 }
 
-double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque, int dimy, int dimx, double* mint, double* maxt) {
+double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
+    int dimy, int dimx, double* mint, double* maxt) {
+
     double somme = 0.0;
     int i;
     int j;
@@ -199,14 +211,17 @@ double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque, int dim
     return somme / (dimx * dimy);
 }
 
-int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, double* mint, double* maxt, int mode, double epsilon, double coeff) {
+int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
+    double* mint, double* maxt, int mode, double epsilon, double coeff) {
+
     int iteration = 0;
     double moyenne;
     t_matrice nouv_plaque;
     int equilibre;
 
     do {
-        equilibre = calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes, dimy, dimx, mode, EPSILON, coeff);
+        equilibre = calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes,
+            dimy, dimx, mode, EPSILON, coeff);
         moyenne = copier_nouv_plaque(plaque, nouv_plaque,
             dimy, dimx, mint, maxt);
 
@@ -224,7 +239,8 @@ int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, double
     return iteration;
 }
 
-void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt) {
+void colorage_plaque(const t_matrice plaque, int dimy, int dimx,
+    double mint, double maxt) {
     double iteration = (maxt - mint) / NB_COUL;
     int i;
     int j;
@@ -244,7 +260,11 @@ void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, do
     textbackground(COULEURS[BLACK]);
 }
 
-unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init, t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx, double* mint, double* maxt) {
+unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init,
+    t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx,
+    double* mint, double* maxt) {
+
+    int iteration_n;
     unsigned char choix;
     int ligne_ecriture = 0;
 
@@ -283,7 +303,7 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
     }
     case 'M': case '2':
         do {
-            printf("Choisissez la méthode (4 ou 8): ");
+            printf("Choisissez la methode (4 ou 8): ");
             scanf("%d", mode);
         } while (*mode != 4 && *mode != 8);
         break;
@@ -301,24 +321,25 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
         break;
     case 'V': case '5':
         if (*init) {
-            printf("Fonction de variation de température à implémenter.\n");
+            printf("Fonction de variation de temperature à implementer.\n");
         }
         else {
-            printf("Veuillez d'abord charger les données.\n");
+            printf("Veuillez d'abord charger les donnees.\n");
         }
         break;
     case 'F': case '6':
         if (*init) {
-            printf("Fonction de fixation de la température à implémenter.\n");
+            printf("Fonction de fixation de la température à implementer.\n");
         }
         else {
-            printf("Veuillez d'abord charger les données.\n");
+            printf("Veuillez d'abord charger les donnees.\n");
         }
         break;
     case 'S': case '7':
         if (*init) {
-            int iter_count = simulation(plaque, pos_fixes, *dimy, *dimx, mint, maxt, *mode, *epsilon, *coeff);
-            printf("Simulation terminée après %d itérations.\n", iter_count);
+            iteration_n = simulation(plaque, pos_fixes, *dimy,
+                *dimx, mint, maxt, *mode, *epsilon, *coeff);
+            printf("Simulation terminée après %d itérations.\n", iteration_n);
             colorage_plaque(plaque, *dimy, *dimx, *mint, *maxt);
         }
         else {
