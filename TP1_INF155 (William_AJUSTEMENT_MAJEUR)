@@ -82,6 +82,9 @@ FILE* lire_nom_fich() {
 
 void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
     int* dimy, int* dimx, double* mint, double* maxt) {
+
+    int i, j;
+
     // Lecture des dimensions de la matrice
     fscanf(fichier, "%d %d", dimy, dimx);
 
@@ -90,8 +93,8 @@ void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
     *maxt = -MAXTEMP; // Valeur arbitrairement petite pour max
 
     // Remplir la matrice avec les températures et calculer min et max
-    for (int i = 0; i < *dimy; ++i) {
-        for (int j = 0; j < *dimx; ++j) {
+    for (i = 0; i < *dimy; ++i) {
+        for (j = 0; j < *dimx; ++j) {
             fscanf(fichier, "%lf", &plaque[i][j]);
 
             // Mettre à jour les températures min et max
