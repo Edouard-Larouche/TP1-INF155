@@ -1,17 +1,86 @@
-  #define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 
 #include "affichages.h"
 
+
 int main() {
-    int dimy, dimx, mode = 4;
-    double coeff = 0.5, mint, maxt, epsilon = EPSILON;
-    int init = 0; // Indique si les données ont été chargées
-    t_matrice plaque;
-    t_matbool pos_fixes;
+	int dimy = 0, dimx = 0, mode = 4, init = 0;
+	double coeff = 0.5, mint, maxt, epsilon = 0.2, coefficient = EPSILON;
+	t_matrice plaque;
+	t_matbool pos_fixes;
+	int iteration_n;
+	const char* message1 = "Nouvelle valeur de epsilon?: ";
+	const char* message2 = "Nouvelle valeur de coefficient?: ";
 
-    while (afficher_menu(&epsilon, &coeff, &mode, &init, plaque, pos_fixes, &dimy, &dimx, &mint, &maxt)) {
-        // La boucle continue tant que afficher_menu retourne 1
-    }
+	unsigned char choix;
+	do {
+		choix = afficher_menu();
 
-    return 0;
+		switch (toupper(choix)) {
+		case 'L': case '1': {
+			FILE* fichier = lire_nom_fich();
+			if (fichier) {
+				lire_fichier(fichier, plaque, pos_fixes, &dimy, &dimx, &mint, &maxt);
+				init = 1; // Indique que les données ont été chargées
+				aff_options(mode, epsilon, coeff);
+			}
+			colorage_plaque(plaque, dimy, dimx, mint, maxt);
+			dessiner_echelle(mint, maxt); // Appel de dessiner_echelle avec mint et maxt actualisés
+			break;
+		}
+		case 'M': case '2': {
+			mode = valider_mode_voisins();
+			aff_options(mode, epsilon, coeff);
+			break;
+		}
+		case 'E': case '3': {
+			epsilon = valider_reel(message1, MIN_EPS, MAX_EPS); // Changer epsilon
+			aff_options(mode, epsilon, coeff);
+			break;
+		}
+		case 'C': case '4': {
+			coeff = valider_reel(message2, MIN_COEF, MAX_COEF); // Changer coefficient
+			aff_options(mode, epsilon, coeff);
+			break;
+		}
+		case 'V': case '5': {
+			if (init) {
+				printf("Fonction de variation de température à implémenter.\n");
+			}
+			else {
+				printf("Veuillez d'abord charger les données.\n");
+			}
+			break;
+		}
+		case 'F': case '6': {
+			if (init) {
+				printf("Fonction de fixation de la température à implémenter.\n");
+			}
+			else {
+				printf("Veuillez d'abord charger les données.\n");
+			}
+			break;
+		}
+		case 'S': case '7': {
+			if (init) {
+				iteration_n = simulation(plaque, pos_fixes, dimy, dimx, &mint, &maxt, mode, epsilon, coeff);
+				aff_nb_iter(iteration_n);
+				dessiner_echelle(mint, maxt); // Redessine l'échelle avec les nouvelles valeurs de mint et maxt après simulation
+			}
+			else {
+				printf("Veuillez d'abord charger les données.\n");
+			}
+			break;
+		}
+		case 'Q': case '8': {
+			printf("Quitter le programme.\n");
+			break;
+		}
+		default:
+			printf("Choix invalide. Essayez à nouveau.\n");
+			break;
+		}
+	} while (toupper(choix) != 'Q' && choix != '8');
+
+	return 0;
 }
