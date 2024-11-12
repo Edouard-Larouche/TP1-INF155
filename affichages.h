@@ -26,8 +26,7 @@ FILE* lire_nom_fich() {
             printf("OUPS... Ca ne marche pas !\n");
         }
     }
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("Entree valide.\n");
+    
     return ptr_de_fichier;
 }
 
@@ -50,28 +49,6 @@ void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, do
 
     // Réinitialise la couleur de fond
     textbackground(0);
-
-    // Affichage de l'échelle des couleurs en bas à droite de l’écran
-    int ligne_echelle = MAXLIG - NB_COUL - 2;  // Position de l’échelle en bas
-    int col_echelle = COL_DROITE + 10;         // Position de l’échelle à droite
-    double temp_min, temp_max;
-    gotoxy(col_echelle, ligne_echelle);
-
-    for (i = 0; i < NB_COUL; i++) {
-        temp_min = mint + i * ecart;  // Température minimale de la couleur actuelle
-        temp_max = temp_min + ecart;  // Température maximale de la couleur actuelle
-
-        // Affiche la couleur
-        textbackground(COULEURS[i]);
-        printf("  ");  // Bloc de couleur
-        textbackground(0);  // Réinitialise la couleur de fond pour la légende
-
-        // Affiche la légende avec la plage de températures
-        printf(" %.2lf - %.2lf", temp_min, temp_max);
-        gotoxy(col_echelle, ligne_echelle + i + 1);  // Passe à la ligne suivante
-    }
-
-    textbackground(0); // Réinitialiser la couleur de fond après l’échelle
 
 }
 
@@ -138,19 +115,24 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
         if (fichier) {
             lire_fichier(fichier, plaque, pos_fixes, dimy, dimx, mint, maxt);
             *init = 1;
+            aff_options(*mode, *epsilon, *coeff);
+           
         }
         colorage_plaque(plaque, *dimy, *dimx, *mint, *maxt);
+        dessiner_echelle(*mint, *maxt);
 
         break;
     }
     case 'M': case '2':
         {
             valider_mode_voisins();
+            aff_options(*mode, *epsilon, *coeff);
         }
         break;
     case 'E': case '3':
          {
-            valider_reel(message,MIN_EPS, MAX_EPS);
+            valider_reel(message,MIN_EPS, MAX_EPS); //Changer le epsilon
+            aff_options(*mode, *epsilon, *coeff); 
         }
         break;
     case 'C': case '4':
@@ -196,7 +178,6 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
 
     return 1;
 }
-
 
 void affichage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt) {
     int i, j, n_couleur;
@@ -266,17 +247,14 @@ void aff_options(int mode, double epsi, double coeff_res) {
     int ligne_affichage = 15;  // Ligne située sous le menu principal
     int col_affichage = COL_DROITE; // Position à droite de l’écran
 
-    gotoxy(col_affichage, ligne_affichage);
-    printf("Options actuelles:");
-
     gotoxy(col_affichage, ligne_affichage + 1);
-    printf("Mode : %d voisins", mode);
+    printf("mode : %d voisins", mode);
 
     gotoxy(col_affichage, ligne_affichage + 2);
-    printf("Epsilon : %.2lf", epsi);
+    printf("epsilon : %.2lf", epsi);
 
     gotoxy(col_affichage, ligne_affichage + 3);
-    printf("Coefficient : %.2lf", coeff_res);
+    printf("coefficient : %.2lf", coeff_res);
 
 }
 
@@ -342,6 +320,8 @@ double valider_reel(const char* message, double b_min, double b_max) {
     // Efface le message d'erreur après saisie correcte
     gotoxy(col_affichage, ligne_affichage + 1);
     printf("                                    ");  // Efface la ligne d'erreur
+
+   
 
     return valeur;
 }
