@@ -254,3 +254,65 @@ unsigned char afficher_menu() {
 
     return choix;
 }
+
+void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, double* mint, double* maxt, int fixe) {
+
+    int posy = dimy / 2;
+    int posx = dimx / 2;
+    int touche;
+    double nouvelle_temp = 0;
+    double ecart = (*maxt - *mint) / NB_COUL;  // Intervalle de température par couleur
+
+    do {
+        // Déterminer la couleur de fond en fonction de la température actuelle
+        int couleur_index = (int)((plaque[posy][posx] - *mint) / ecart);
+        if (couleur_index >= NB_COUL) couleur_index = NB_COUL - 1;
+        textbackground(COULEURS[couleur_index]);
+
+        // Afficher le curseur « + » à la position actuelle
+        gotoxy(posx, posy);
+        printf("+");
+
+        // Attendre une touche du clavier
+        touche = _getch();
+
+        // Restaurer l’affichage de la température à l’ancienne position
+        gotoxy(posx, posy);
+        printf(" ");  // Efface le curseur avant de déplacer
+
+        // Déplacement du curseur avec les touches fléchées
+        if (touche == 224) {  // Préfixe pour les touches fléchées
+            touche = _getch();
+            switch (touche) {
+            case 72:  // Flèche haut
+                if (posy > 0) posy--;
+                break;
+            case 80:  // Flèche bas
+                if (posy < dimy - 1) posy++;
+                break;
+            case 75:  // Flèche gauche
+                if (posx > 0) posx--;
+                break;
+            case 77:  // Flèche droite
+                if (posx < dimx - 1) posx++;
+                break;
+            }
+        }
+
+    } while (touche != 13);  // Quitte la boucle avec Entrée (ASCII 13)
+
+    // Obtenir la nouvelle température pour la position actuelle
+    nouvelle_temp = valider_reel("Nouvelle température : ", *mint, *maxt);
+    plaque[posy][posx] = nouvelle_temp;
+
+    // Ajuster mint et maxt si nécessaire
+    if (nouvelle_temp < *mint) *mint = nouvelle_temp;
+    if (nouvelle_temp > *maxt) *maxt = nouvelle_temp;
+
+    // Marquer la position comme fixe ou variable selon le paramètre fixe
+    pos_fixes[posy][posx] = fixe;
+
+    // Redessiner la plaque pour afficher les nouvelles températures et échelle
+    colorage_plaque(plaque, dimy, dimx, *mint, *maxt);
+    dessiner_echelle(*mint, *maxt);
+}
