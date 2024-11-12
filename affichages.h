@@ -103,6 +103,7 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
     t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx,
     double* mint, double* maxt) {
 
+    const char* message = "Nouvelle valeur de epsilon?: ";
     int iteration_n;
     unsigned char choix;
     int ligne_ecriture = 0;  // Position du menu en bas de l'écran
@@ -144,16 +145,14 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
         break;
     }
     case 'M': case '2':
-        do {
+        {
             valider_mode_voisins();
-      
-        } while (*mode != 4 && *mode != 8);
+        }
         break;
     case 'E': case '3':
-        do {
-            printf("Entrez une valeur pour epsilon (0.01 - 10.0): ");
-            scanf("%lf", epsilon);
-        } while (*epsilon < 0.01 || *epsilon > 10.0);
+         {
+            valider_reel(message,MIN_EPS, MAX_EPS);
+        }
         break;
     case 'C': case '4':
         do {
@@ -331,6 +330,9 @@ double valider_reel(const char* message, double b_min, double b_max) {
         gotoxy(col_affichage, ligne_affichage);
         printf("%s (entre %.2lf et %.2lf) : ", message, b_min, b_max);
         scanf("%lf", &valeur);
+        FFLUSH(); 
+        gotoxy(col_affichage, ligne_affichage);
+        printf("                                                           "); // Efface
 
         if (valeur < b_min || valeur > b_max) {
             gotoxy(col_affichage, ligne_affichage + 1);
