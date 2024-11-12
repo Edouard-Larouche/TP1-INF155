@@ -71,7 +71,6 @@ void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, do
         gotoxy(col_echelle, ligne_echelle + i + 1);  // Passe à la ligne suivante
     }
 
-
     textbackground(0); // Réinitialiser la couleur de fond après l’échelle
 
 }
@@ -116,9 +115,9 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
     gotoxy(COL_DROITE, ++ligne_ecriture);
     printf("2. (M)ethode: 4 voisins ou 8 voisins\n");
     gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("3. Changer (E)psilon (actuel: %.2lf)\n", *epsilon);
+    printf("3. Changer (E)psilon");
     gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("4. Changer (C)oefficient (actuel: %.2lf)\n", *coeff);
+    printf("4. Changer (C)oefficient");
     gotoxy(COL_DROITE, ++ligne_ecriture);
     printf("5. (V)ariation de temperature\n");
     gotoxy(COL_DROITE, ++ligne_ecriture);
@@ -199,3 +198,143 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
     return 1;
 }
 
+
+void affichage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt) {
+    int i, j, n_couleur;
+    double ecart = (maxt - mint) / NB_COUL;  // Intervalle de température par couleur
+    gotoxy(0, 0);
+    // Affichage de la plaque colorée
+    for (i = 0; i < dimy; i++) {
+        for (j = 0; j < dimx; j++) {
+            n_couleur = (int)((plaque[i][j] - mint) / ecart);
+            if (n_couleur >= NB_COUL) {
+                n_couleur = NB_COUL - 1;  // Pour éviter le dépassement
+            }
+            textbackground(COULEURS[n_couleur]);
+            printf(" "); // Imprime la couleur
+        }
+        printf("\n");
+    }
+
+    // Réinitialise la couleur de fond
+    textbackground(0);
+}
+
+void effacer_plaque(int nblig) {
+    int i;
+    int j;
+    gotoxy(0, 0);  // Revenir au coin supérieur gauche
+
+    for (i = 0; i < nblig; i++) {
+        printf("\r");           // Retourner au début de la ligne
+        for (j = 0; j < COL_DROITE; j++) {
+            printf(" ");        // Afficher des espaces pour effacer la ligne
+        }
+        printf("\n");           // Passer à la ligne suivante
+    }
+
+    gotoxy(0, 0);  // Revenir au coin supérieur gauche après l'effacement
+}
+
+void dessiner_echelle(double mint, double maxt) {
+
+    int ligne_echelle = MAXLIG - NB_COUL - 2;  // Position de l’échelle en bas
+    int col_echelle = COL_DROITE + 10;         // Position de l’échelle à droite
+    double temp_min, temp_max;
+    double ecart = (maxt - mint) / NB_COUL;
+    int i;
+    gotoxy(col_echelle, ligne_echelle);
+
+    for (i = 0; i < NB_COUL; i++) {
+        temp_min = mint + i * ecart;  // Température minimale de la couleur actuelle
+        temp_max = temp_min + ecart;  // Température maximale de la couleur actuelle
+
+        // Affiche la couleur
+        textbackground(COULEURS[i]);
+        printf("  ");  // Bloc de couleur
+        textbackground(0);  // Réinitialise la couleur de fond pour la légende
+
+        // Affiche la légende avec la plage de températures
+        printf(" %.2lf - %.2lf", temp_min, temp_max);
+        gotoxy(col_echelle, ligne_echelle + i + 1);  // Passe à la ligne suivante
+    }
+
+    textbackground(0); // Réinitialiser la couleur de fond après l’échelle
+
+}
+
+void aff_options(int mode, double epsi, double coeff_res) {
+    int ligne_affichage = 15;  // Ligne située sous le menu principal
+    int col_affichage = COL_DROITE; // Position à droite de l’écran
+
+    gotoxy(col_affichage, ligne_affichage);
+    printf("Options actuelles:");
+
+    gotoxy(col_affichage, ligne_affichage + 1);
+    printf("Mode : %d voisins", mode);
+
+    gotoxy(col_affichage, ligne_affichage + 2);
+    printf("Epsilon : %.2lf", epsi);
+
+    gotoxy(col_affichage, ligne_affichage + 3);
+    printf("Coefficient : %.2lf", coeff_res);
+
+}
+
+void aff_minmax_moy(double mint, double maxt, double moyenne) {
+    gotoxy(COL_DROITE, LINGNE_INFO_TABLE);
+    printf("Max : %.2lf | Min : %.2lf | Moyenne : %.2lf", maxt, mint, moyenne);
+}
+
+void aff_nb_iter(int nb_iter) {
+
+    gotoxy(COL_DROITE, LINGNE_INFO_TABLE + 1);
+    printf("Simulation terminee apres %d iterations.\n", nb_iter);
+}
+
+int valider_mode_voisins() {
+    int mode;
+    int ligne_affichage = 15;  // Ligne des options « mode, epsilon, coeff_res »
+    int col_affichage = COL_DROITE;
+
+    do {
+        gotoxy(col_affichage, ligne_affichage);
+        printf("Mode de calcul (4 ou 8 voisins) : ");
+        scanf("%d", &mode);
+
+        if (mode != 4 && mode != 8) {
+            gotoxy(col_affichage, ligne_affichage + 1);
+            printf("Erreur: entrez 4 ou 8 uniquement.");
+        }
+    } while (mode != 4 && mode != 8);
+
+    // Efface le message d'erreur après saisie correcte
+    gotoxy(col_affichage, ligne_affichage + 1);
+    printf("                                    ");  // Efface la ligne d'erreur
+
+    return mode;
+}
+
+double valider_reel(const char* message, double b_min, double b_max) {
+
+    double valeur;
+    int ligne_affichage = 16;  // Ligne des options « mode, epsilon, coeff_res »
+    int col_affichage = COL_DROITE;
+
+    do {
+        gotoxy(col_affichage, ligne_affichage);
+        printf("%s (entre %.2lf et %.2lf) : ", message, b_min, b_max);
+        scanf("%lf", &valeur);
+
+        if (valeur < b_min || valeur > b_max) {
+            gotoxy(col_affichage, ligne_affichage + 1);
+            printf("Erreur: valeur hors des limites.");
+        }
+    } while (valeur < b_min || valeur > b_max);
+
+    // Efface le message d'erreur après saisie correcte
+    gotoxy(col_affichage, ligne_affichage + 1);
+    printf("                                    ");  // Efface la ligne d'erreur
+
+    return valeur;
+}
