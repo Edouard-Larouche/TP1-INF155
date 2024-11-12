@@ -75,110 +75,6 @@ int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
     return iteration;
 }
 
-unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init,
-    t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx,
-    double* mint, double* maxt) {
-
-    const char* message = "Nouvelle valeur de epsilon?: ";
-    int iteration_n;
-    unsigned char choix;
-    int ligne_ecriture = 0;  // Position du menu en bas de l'écran
-
-    textmode(55); // Configure la console en mode 55 lignes X 120 caractères
-
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("Menu:\n");
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("1. (L)ire donnees initiales d'un fichier\n");
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("2. (M)ethode: 4 voisins ou 8 voisins\n");
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("3. Changer (E)psilon");
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("4. Changer (C)oefficient");
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("5. (V)ariation de temperature\n");
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("6. (F)ixer temperature\n");
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("7. (S)imulation\n");
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("8. (Q)uitter le programme\n");
-
-    gotoxy(COL_DROITE, ++ligne_ecriture);
-    printf("Choisissez une option: ");
-    choix = toupper(_getch());
-
-    switch (choix) {
-    case 'L': case '1': {
-        FILE* fichier = lire_nom_fich();
-        if (fichier) {
-            lire_fichier(fichier, plaque, pos_fixes, dimy, dimx, mint, maxt);
-            *init = 1;
-            aff_options(*mode, *epsilon, *coeff);
-           
-        }
-        colorage_plaque(plaque, *dimy, *dimx, *mint, *maxt);
-        dessiner_echelle(*mint, *maxt);
-
-        break;
-    }
-    case 'M': case '2':
-        {
-            valider_mode_voisins();
-            aff_options(*mode, *epsilon, *coeff);
-        }
-        break;
-    case 'E': case '3':
-         {
-            valider_reel(message,MIN_EPS, MAX_EPS); //Changer le epsilon
-            aff_options(*mode, *epsilon, *coeff); 
-        }
-        break;
-    case 'C': case '4':
-        do {
-            printf("Entrez une valeur pour le coefficient (0.20 - 0.80): ");
-            scanf("%lf", coeff);
-        } while (*coeff < 0.20 || *coeff > 0.80);
-        break;
-    case 'V': case '5':
-        if (*init) {
-            printf("Fonction de variation de temperature à implementer.\n");
-        }
-        else {
-            printf("Veuillez d'abord charger les donnees.\n");
-        }
-        break;
-    case 'F': case '6':
-        if (*init) {
-            printf("Fonction de fixation de la temperature à implementer.\n");
-        }
-        else {
-            printf("Veuillez d'abord charger les donnees.\n");
-        }
-        break;
-    case 'S': case '7':
-        if (*init) {
-            iteration_n = simulation(plaque, pos_fixes, *dimy,
-                *dimx, mint, maxt, *mode, *epsilon, *coeff);
-
-            aff_nb_iter(iteration_n);
-        }
-        else {
-            printf("Veuillez d'abord charger les données.\n");
-        }
-        break;
-    case 'Q': case '8':
-        printf("Quitter le programme.\n");
-        return 0;
-    default:
-        printf("Choix invalide. Essayez à nouveau.\n");
-        break;
-    }
-
-    return 1;
-}
-
 void affichage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt) {
     int i, j, n_couleur;
     double ecart = (maxt - mint) / NB_COUL;  // Intervalle de température par couleur
@@ -324,4 +220,37 @@ double valider_reel(const char* message, double b_min, double b_max) {
    
 
     return valeur;
+}
+
+unsigned char afficher_menu() {
+
+    const char* message = "Nouvelle valeur de epsilon?: ";
+    int ligne_ecriture = 0;  // Position du menu en bas de l'écran
+    unsigned char choix;
+
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("Menu:\n");
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("1. (L)ire donnees initiales d'un fichier\n");
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("2. (M)ethode: 4 voisins ou 8 voisins\n");
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("3. Changer (E)psilon");
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("4. Changer (C)oefficient");
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("5. (V)ariation de temperature\n");
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("6. (F)ixer temperature\n");
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("7. (S)imulation\n");
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("8. (Q)uitter le programme\n");
+
+    gotoxy(COL_DROITE, ++ligne_ecriture);
+    printf("Choisissez une option: ");
+
+    choix = toupper(_getch());
+
+    return choix;
 }
