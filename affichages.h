@@ -45,3 +45,5 @@ int valider_mode_voisins();
 double valider_reel(const char* message, double b_min, double b_max);
 
 unsigned char afficher_menu();
+
+void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, double* mint, double* maxt, int fixe);
