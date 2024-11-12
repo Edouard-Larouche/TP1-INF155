@@ -180,8 +180,8 @@ unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init
         if (*init) {
             iteration_n = simulation(plaque, pos_fixes, *dimy,
                 *dimx, mint, maxt, *mode, *epsilon, *coeff);
-            gotoxy(COL_DROITE, LINGNE_INFO_TABLE + 1);
-            printf("Simulation terminee apres %d iterations.\n", iteration_n);
+
+            aff_nb_iter(iteration_n);
         }
         else {
             printf("Veuillez d'abord charger les données.\n");
