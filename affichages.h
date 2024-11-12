@@ -91,8 +91,7 @@ int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
         moyenne = copier_nouv_plaque(plaque, nouv_plaque,
             dimy, dimx, mint, maxt);
         colorage_plaque(plaque, dimy, dimx, *mint, *maxt);
-        gotoxy(COL_DROITE, LINGNE_INFO_TABLE);
-        printf("Max : %.2lf | Min : %.2lf | Moyenne : %.2lf", *maxt, *mint, moyenne);
+        aff_minmax_moy(*mint, *maxt, moyenne); 
         iteration++;
     } while (equilibre != 1);
 
