@@ -27,3 +27,19 @@ int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
 unsigned char afficher_menu(double* epsilon, double* coeff, int* mode, int* init,
     t_matrice plaque, t_matbool pos_fixes, int* dimy, int* dimx, double* mint,
     double* maxt);
+
+void affichage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt);
+
+void effacer_plaque(int nblig);
+
+void dessiner_echelle(double mint, double maxt);
+
+void aff_options(int mode, double epsi, double coeff_res);
+
+void aff_minmax_moy(double mint, double maxt, double moyenne);
+
+void aff_nb_iter(int nb_iter);
+
+int valider_mode_voisins();
+
+double valider_reel(const char* message, double b_min, double b_max);
