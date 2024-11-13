@@ -1,4 +1,26 @@
 
+/*
+Par: William Chung et Edouard Larouche
+Date : Octobre 2024 - Novembre 2024
+
+Ce module implémente les sous-fonctions pour l'affichage sur l'écran.
+Voici les sous-fonctions:
+- lire_nom_fich: Lit et retourne un fichier valide.
+- colorage_plaque: Affiche la plaque colorée selon les températures.
+- simulation: Effectue la simulation thermique et retourne le nombre d'itérations.
+- affichage_plaque: Affiche la plaque de températures sans simulation.
+- effacer_plaque: Efface la plaque d'affichage.
+- dessiner_echelle: Affiche l'échelle de températures à côté de la plaque.
+- aff_options: Affiche les options de simulation (mode, epsilon, coefficient).
+- aff_minmax_moy: Affiche les températures min, max et moyenne.
+- aff_nb_iter: Affiche le nombre d'itérations de la simulation.
+- valider_mode_voisins: Valide le mode de calcul (4 ou 8 voisins).
+- valider_reel: Valide un nombre réel entre un min et un max.
+- afficher_menu: Affiche le menu principal pour choisir les options.
+- pt_variation: Permet de modifier la température à une position donnée sur la plaque.
+
+*/
+
 #include "affichages.h"
 #include "WinConsole.h"
 #include <ctype.h> 
@@ -55,20 +77,38 @@ void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, do
 int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
     double* mint, double* maxt, int mode, double epsilon, double coeff) {
 
+    // Variable pour compter le nombre d'itérations de la simulation
     int iteration = 0;
+
+    // Variable pour stocker la moyenne des températures
     double moyenne;
+
+    // Matrice qui contient les nouvelles températures calculées à chaque itération
     t_matrice nouv_plaque;
+
+    // Variable pour vérifier si l'équilibre a été atteint (1 si stable, 0 si non)
     int equilibre;
     int i, j;
 
     do {
 
+        // Calculer la nouvelle plaque de températures à partir de la plaque actuelle
+        // La fonction renvoie si l'équilibre est atteint ou non.
         equilibre = calculer_nouv_plaque(plaque, nouv_plaque, pos_fixes,
             dimy, dimx, mode, EPSILON, coeff);
+
+        /* Copier les nouvelles températures calculées
+        dans la plaque et obtenir la moyenne */
+    // Cette fonction met à jour la plaque et retourne la température moyenne
         moyenne = copier_nouv_plaque(plaque, nouv_plaque,
             dimy, dimx, mint, maxt);
+
+        // Appliquer le coloriage de la plaque selon les températures actuelles
+     /* Cela va mettre à jour l'affichage en fonction
+     des températures minimales et maximales */
         colorage_plaque(plaque, dimy, dimx, *mint, *maxt);
         aff_minmax_moy(*mint, *maxt, moyenne); 
+
         iteration++;
     } while (equilibre != 1);
 
