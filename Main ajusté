@@ -17,6 +17,12 @@ peut naviguer à travers les options du menu et choisir différentes actions à 
 */
 #include "affichages.h"
 
+#if (MODE_TEST) 
+int main(void) { 
+	test_moyenne_voisins();
+}
+
+#else
 int main() {
 	int dimy = 0, dimx = 0, mode = 4, init = 0;
 	double coeff = 0.5, mint, maxt, epsilon = 0.2, coefficient = EPSILON;
@@ -100,3 +106,4 @@ int main() {
 
 	return 0;
 }
+#endif
