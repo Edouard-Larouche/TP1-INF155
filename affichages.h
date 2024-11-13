@@ -1,5 +1,5 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
+
 #include "plaque_lib.h"
 #include <conio.h>
 #include <ctype.h> 
