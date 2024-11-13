@@ -1,7 +1,21 @@
 
+/*
+Par: William Chung et Edouard Larouche
 
+Ce programme gère la simulation de la diffusion thermique sur une plaque.
+Il permet à l'utilisateur de charger des données à partir d'un fichier, de configurer
+des paramètres comme le mode de voisinage, les valeurs d'epsilon et de coefficient,
+et de simuler l'évolution de la température sur la plaque.
+
+Le programme propose également plusieurs options interactives,
+telles que la visualisation des variations de température et la mise à jour
+de l'échelle de température en fonction des valeurs minimales et maximales.
+
+Les opérations principales sont réalisées dans une boucle où l'utilisateur
+peut naviguer à travers les options du menu et choisir différentes actions à exécuter.
+
+*/
 #include "affichages.h"
-
 
 int main() {
 	int dimy = 0, dimx = 0, mode = 4, init = 0;
