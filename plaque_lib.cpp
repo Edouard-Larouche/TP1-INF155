@@ -43,7 +43,8 @@ void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
 double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
     double somme = 0;
     int n = 0;
-
+    int i;
+    int j;
     if (mode == 4) {
         if (y > 0) {
             somme += plaque[y - 1][x];
@@ -65,8 +66,8 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
         return (somme / n);
     }
     else if (mode == 8) {
-        for (int i = -1; i <= 1; i++) {
-            for (int j = -1; j <= 1; j++) {
+        for (i = -1; i <= 1; i++) {
+            for (j = -1; j <= 1; j++) {
                 if (!(i == 0 && j == 0)) {
                     if (y + i >= 0 && y + i < MAXLIG && x + j >= 0 && x + j < MAXCOL) {
                         somme += plaque[y + i][x + j];
