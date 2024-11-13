@@ -52,12 +52,14 @@ void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
     fclose(fichier);
 }
 
+/*=========================================================*/
+
 double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
     double somme = 0;
     int n = 0;
     int i;
     int j;
-    if (mode == 4) {
+    if (mode == 4) { // Calcul avec mode voisin 4
         if (y > 0) {
             somme += plaque[y - 1][x];
             n++;
@@ -77,7 +79,7 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
 
         return (somme / n);
     }
-    else if (mode == 8) {
+    else if (mode == 8) { // Calcul avec mode voisin 8
         for (i = -1; i <= 1; i++) {
             for (j = -1; j <= 1; j++) {
                 if (!(i == 0 && j == 0)) {
@@ -93,6 +95,8 @@ double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
     return 0.0;
 }
 
+/*=========================================================*/
+
 int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
     t_matbool pos_fixes, int dimy, int dimx, int mode,
     double epsilon, double coeff) {
@@ -100,11 +104,14 @@ int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
     int j;
     int i;
 
-    int equilibre = 1;
+    int equilibre = 1;     // Variable pour vérifier si l'équilibre est atteint
+
 
     for (i = 0; i < dimy; ++i) {
         for (j = 0; j < dimx; ++j) {
-            if (pos_fixes[i][j] == 0) {
+            if (pos_fixes[i][j] == 0) { 
+                /* Calcul de la nouvelle valeur en fonction
+                de la valeur actuelle et de la moyenne des voisins*/
                 nouv_plaque[i][j] = (plaque[i][j] * coeff) +
                     (moyenne_voisins(plaque, i, j, mode)) * (1.0 - coeff);
                 // Si la différence dépasse epsilon
@@ -125,6 +132,8 @@ int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
     }
 
 }
+
+/*=========================================================*/
 
 double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
     int dimy, int dimx, double* mint, double* maxt) {
