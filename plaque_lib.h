@@ -1,6 +1,7 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS 
+#define _CRT_SECURE_NO_WARNINGS // Pour désactiver des alertes 
 #include <stdio.h>
+
 #define MAXLIG  40         // Dimension maximale en lignes de la plaque
 #define MAXCOL  75         // Dimension maximale en colonnes de la plaque
 #define MAXTEMP 500        // Température maximale permise
