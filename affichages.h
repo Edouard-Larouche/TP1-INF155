@@ -4,22 +4,36 @@
 #include <conio.h>
 #include <ctype.h> 
 
-#define MAXLIG  40          // Dimension maximale de la plaque
-#define MAXCOL  75
-#define MAXTEMP 500			  // La température absolue maximale permise
-#define COL_DROITE 80
-#define EPSILON 1.0
-#define ESPACEMENT_COLONES 3 // Pour permettre une lecture plus facile
-#define ESPACEMENT_RANGEES 3   // Pour permettre une lecture plus facile
-#define NB_COUL  15 
-#define LINGNE_INFO_TABLE 40
-#define MIN_EPS 0.01
-#define MAX_EPS 10.0
-#define MIN_COEF 0.20
-#define MAX_COEF 0.80
+#define MAXLIG  40          // Dimension maximale du nombre de lignes de la plaque (hauteur)
+#define MAXCOL  75          // Dimension maximale du nombre de colonnes de la plaque (largeur)
+#define MAXTEMP 500         // La température maximale permise sur la plaque
+#define COL_DROITE 80       // Position de la colonne pour l'affichage dans l'interface
+#define EPSILON 1.0         // Valeur de epsilon
+#define ESPACEMENT_COLONES 3 // Espacement entre les colonnes 
+#define ESPACEMENT_RANGEES 3  // Espacement entre les rangées 
+#define NB_COUL  15         // Nombre de couleurs utilisées pour visualisé la plaque
+#define LINGNE_INFO_TABLE 40 // Nombre de lignes d'information à afficher dans la table d'affichage
+#define MIN_EPS 0.01        // Valeur minimale d'epsilon
+#define MAX_EPS 10.0        // Valeur maximale d'epsilon
+#define MIN_COEF 0.20       // Valeur minimale du coefficient 
+#define MAX_COEF 0.80       // Valeur maximale du coefficient 
 
 #define FFLUSH() while(getchar() != '\n') {}  // Macro pour vider les scanf()
 
+/*
+ LIRE_NOM_FICH
+ Codée par Larouche Edouard
+ 
+ Cette fonction permet de lire le nom d'un fichier depuis l'entrée
+ standard et retourne un pointeur vers le fichier ouvert.
+ 
+ PARAMÈTRES :
+ Aucun (fonction sans paramètre).
+ 
+ VALEUR DE RETOUR : Un pointeur de type FILE pointant vers le fichier
+ ouvert. Si l'ouverture échoue, retourne NULL.
+
+ */
 FILE* lire_nom_fich();
 
 void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint,
