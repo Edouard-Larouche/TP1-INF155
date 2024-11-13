@@ -26,7 +26,7 @@ int main() {
 	const char* message1 = "Nouvelle valeur de epsilon?: ";
 	const char* message2 = "Nouvelle valeur de coefficient?: ";
 
-	unsigned char choix;
+	unsigned char choix; // Variable pour stocker le choix de l'utilisateur
 	do {
 		choix = afficher_menu();
 
@@ -39,11 +39,11 @@ int main() {
 				aff_options(mode, epsilon, coeff);
 			}
 			colorage_plaque(plaque, dimy, dimx, mint, maxt);
-			dessiner_echelle(mint, maxt); // Appel de dessiner_echelle avec mint et maxt actualisés
+			dessiner_echelle(mint, maxt); // Appel de dessiner_echelle avec mint et maxt
 			break;
 		}
 		case 'M': case '2': {
-			mode = valider_mode_voisins();
+			mode = valider_mode_voisins(); // Choisir le mode
 			aff_options(mode, epsilon, coeff);
 			break;
 		}
@@ -62,7 +62,7 @@ int main() {
 				pt_variation(plaque, pos_fixes, dimy, dimx, &mint, &maxt, 0);
 			}
 			else {
-				printf("Veuillez d'abord charger les données.\n");
+				printf("Veuillez d'abord charger les donnees.\n");
 			}
 			break;
 		}
@@ -71,18 +71,20 @@ int main() {
 				pt_variation(plaque, pos_fixes, dimy, dimx, &mint, &maxt, 1);
 			}
 			else {
-				printf("Veuillez d'abord charger les données.\n");
+				printf("Veuillez d'abord charger les donnees.\n");
 			}
 			break;
 		}
 		case 'S': case '7': {
 			if (init) {
-				iteration_n = simulation(plaque, pos_fixes, dimy, dimx, &mint, &maxt, mode, epsilon, coeff);
+				iteration_n = simulation(plaque, pos_fixes, dimy, dimx, &mint,
+					&maxt, mode, epsilon, coeff);
 				aff_nb_iter(iteration_n);
-				dessiner_echelle(mint, maxt); // Redessine l'échelle avec les nouvelles valeurs de mint et maxt après simulation
+				dessiner_echelle(mint, maxt); /* Redessine l'échelle avec les nouvelles valeurs
+				de mint et maxt après simulation*/
 			}
 			else {
-				printf("Veuillez d'abord charger les données.\n");
+				printf("Veuillez d'abord charger les donnees.\n");
 			}
 			break;
 		}
