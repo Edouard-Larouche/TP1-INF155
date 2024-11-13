@@ -17,6 +17,8 @@ peut naviguer à travers les options du menu et choisir différentes actions à 
 */
 #include "affichages.h"
 
+// Ouvrir le test unitaire dans le fichier plaque_lib.h
+
 #if (MODE_TEST) 
 int main(void) { 
 	test_moyenne_voisins();
@@ -65,7 +67,7 @@ int main() {
 		}
 		case 'V': case '5': {
 			if (init) {
-				pt_variation(plaque, pos_fixes, dimy, dimx, &mint, &maxt, 0);
+				pt_variation(plaque, pos_fixes, dimy, dimx, &mint, &maxt, 0); // Permet variation
 			}
 			else {
 				printf("Veuillez d'abord charger les donnees.\n");
@@ -83,7 +85,10 @@ int main() {
 		}
 		case 'S': case '7': {
 			if (init) {
-				iteration_n = simulation(plaque, pos_fixes, dimy, dimx, &mint,
+				/* Permet de faire la simulation ainsi que d'afficher
+				la légende de couleur et le nombre d'itération*/
+
+				iteration_n = simulation(plaque, pos_fixes, dimy, dimx, &mint, 
 					&maxt, mode, epsilon, coeff);
 				aff_nb_iter(iteration_n);
 				dessiner_echelle(mint, maxt); /* Redessine l'échelle avec les nouvelles valeurs
@@ -102,8 +107,9 @@ int main() {
 			printf("Choix invalide. Essayez à nouveau.\n");
 			break;
 		}
-	} while (toupper(choix) != 'Q' && choix != '8');
 
+		//Pour sortir du programme avec la selection 8
+	} while (toupper(choix) != 'Q' && choix != '8'); 
 	return 0;
 }
 #endif
