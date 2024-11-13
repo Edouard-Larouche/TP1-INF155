@@ -25,10 +25,13 @@ Voici les sous-fonctions:
 #include "WinConsole.h"
 #include <ctype.h> 
 
+/*=========================================================*/
 
 const int COULEURS[NB_COUL] = { RED, LIGHTRED, MAGENTA, LIGHTMAGENTA, BLUE,
 LIGHTBLUE, CYAN, LIGHTCYAN, GREEN, LIGHTGREEN, DARKGRAY, BROWN,
 YELLOW, LIGHTGRAY, WHITE };
+
+/*=========================================================*/
 
 FILE* lire_nom_fich() {
     FILE* ptr_de_fichier = NULL;
@@ -37,20 +40,22 @@ FILE* lire_nom_fich() {
 
     while (!ptr_de_fichier) {
         gotoxy(COL_DROITE, ++ligne_ecriture);
-        printf("Entrez le nom du fichier a selectionner : ");
+        printf("Entrez le nom du fichier a selectionner : "); 
         gotoxy(COL_DROITE, ++ligne_ecriture);
         scanf("%s", nom_saisi);
         FFLUSH();
 
-        ptr_de_fichier = fopen(nom_saisi, "r");
+        ptr_de_fichier = fopen(nom_saisi, "r"); //Ouverture du fichier en mode lecture
         if (!ptr_de_fichier) {
             gotoxy(COL_DROITE, ++ligne_ecriture);
-            printf("OUPS... Ca ne marche pas !\n");
+            printf("OUPS... Ca ne marche pas !\n"); 
         }
     }
     
     return ptr_de_fichier;
 }
+
+/*=========================================================*/
 
 void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt) {
     int i, j, n_couleur;
@@ -59,7 +64,9 @@ void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, do
     // Affichage de la plaque colorée
     for (i = 0; i < dimy; i++) {
         for (j = 0; j < dimx; j++) {
-            n_couleur = (int)((plaque[i][j] - mint) / ecart);
+
+            /* Calcul qui permet d'attribuer la couleur designé*/
+            n_couleur = (int)((plaque[i][j] - mint) / ecart); 
             if (n_couleur >= NB_COUL) {
                 n_couleur = NB_COUL - 1;  // Pour éviter le dépassement
             }
@@ -74,6 +81,8 @@ void colorage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, do
 
 }
 
+/*=========================================================*/
+
 int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
     double* mint, double* maxt, int mode, double epsilon, double coeff) {
 
@@ -83,7 +92,8 @@ int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
     // Variable pour stocker la moyenne des températures
     double moyenne;
 
-    // Matrice qui contient les nouvelles températures calculées à chaque itération
+    /* Matrice qui contient les nouvelles 
+    températures calculées à chaque itération*/
     t_matrice nouv_plaque;
 
     // Variable pour vérifier si l'équilibre a été atteint (1 si stable, 0 si non)
@@ -115,6 +125,8 @@ int simulation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx,
     return iteration;
 }
 
+/*=========================================================*/
+
 void affichage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, double maxt) {
     int i, j, n_couleur;
     double ecart = (maxt - mint) / NB_COUL;  // Intervalle de température par couleur
@@ -136,6 +148,8 @@ void affichage_plaque(const t_matrice plaque, int dimy, int dimx, double mint, d
     textbackground(0);
 }
 
+/*=========================================================*/
+
 void effacer_plaque(int nblig) {
     int i;
     int j;
@@ -151,6 +165,8 @@ void effacer_plaque(int nblig) {
 
     gotoxy(0, 0);  // Revenir au coin supérieur gauche après l'effacement
 }
+
+/*=========================================================*/
 
 void dessiner_echelle(double mint, double maxt) {
 
@@ -179,6 +195,8 @@ void dessiner_echelle(double mint, double maxt) {
 
 }
 
+/*=========================================================*/
+
 void aff_options(int mode, double epsi, double coeff_res) {
     int ligne_affichage = 15;  // Ligne située sous le menu principal
     int col_affichage = COL_DROITE; // Position à droite de l’écran
@@ -194,10 +212,14 @@ void aff_options(int mode, double epsi, double coeff_res) {
 
 }
 
+/*=========================================================*/
+
 void aff_minmax_moy(double mint, double maxt, double moyenne) {
     gotoxy(COL_DROITE, LINGNE_INFO_TABLE);
     printf("Max : %.2lf | Min : %.2lf | Moyenne : %.2lf", maxt, mint, moyenne);
 }
+
+/*=========================================================*/
 
 void aff_nb_iter(int nb_iter) {
 
@@ -205,9 +227,11 @@ void aff_nb_iter(int nb_iter) {
     printf("Simulation terminee apres %d iterations.\n", nb_iter);
 }
 
+/*=========================================================*/
+
 int valider_mode_voisins() {
     int mode;
-    int ligne_affichage = 15;  // Ligne des options « mode, epsilon, coeff_res »
+    int ligne_affichage = 15;
     int col_affichage = COL_DROITE;
 
     do {
@@ -233,10 +257,12 @@ int valider_mode_voisins() {
     return mode;
 }
 
+/*=========================================================*/
+
 double valider_reel(const char* message, double b_min, double b_max) {
 
     double valeur;
-    int ligne_affichage = 16;  // Ligne des options « mode, epsilon, coeff_res »
+    int ligne_affichage = 16;  
     int col_affichage = COL_DROITE;
 
     do {
@@ -261,6 +287,8 @@ double valider_reel(const char* message, double b_min, double b_max) {
 
     return valeur;
 }
+
+/*=========================================================*/
 
 unsigned char afficher_menu() {
 
@@ -295,6 +323,8 @@ unsigned char afficher_menu() {
     return choix;
 }
 
+/*=========================================================*/
+
 void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, double* mint, double* maxt, int fixe) {
 
     int posy = dimy / 2;
@@ -307,6 +337,7 @@ void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, dou
         // Déterminer la couleur de fond en fonction de la température actuelle
         couleur_de_fond = (int)((plaque[posy][posx] - *mint) / ecart);
         if (couleur_de_fond >= NB_COUL) couleur_de_fond = NB_COUL - 1;
+
         textbackground(COULEURS[couleur_de_fond]);
 
         // Afficher le curseur « + » à la position actuelle
@@ -339,12 +370,12 @@ void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, dou
             }
         }
 
-    } while (touche != 13);  // Quitte la boucle avec Entrée (ASCII 13)
+    } while (touche != 13);  // Quitte la boucle avec entrée (ASCII 13)
 
-    textbackground(BLACK);
+    textbackground(BLACK); // Mise a couleur noir de fond noir pour insertion des textes
 
     // Obtenir la nouvelle température pour la position actuelle
-    nouvelle_temp = valider_reel("Nouvelle tempErature : ", *mint, *maxt);
+    nouvelle_temp = valider_reel("Nouvelle temperature : ", *mint, *maxt);
     plaque[posy][posx] = nouvelle_temp;
 
     // Ajuster mint et maxt si nécessaire
