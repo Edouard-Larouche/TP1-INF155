@@ -3,7 +3,7 @@
 Par: William Chung et Edouard Larouche
 Date : Octobre 2024 - Novembre 2024
 
-Ce module implémente les sous-fonctions pour l'affichage sur l'écran.
+Ce module implémente des sous-fonctions pour l'affichage sur l'écran.
 Voici les sous-fonctions:
 - lire_nom_fich: Lit et retourne un fichier valide.
 - colorage_plaque: Affiche la plaque colorée selon les températures.
@@ -215,6 +215,7 @@ void aff_options(int mode, double epsi, double coeff_res) {
 /*=========================================================*/
 
 void aff_minmax_moy(double mint, double maxt, double moyenne) {
+    // Imprime la valeur du max, min et moyenne
     gotoxy(COL_DROITE, LINGNE_INFO_TABLE);
     printf("Max : %.2lf | Min : %.2lf | Moyenne : %.2lf", maxt, mint, moyenne);
 }
@@ -223,6 +224,7 @@ void aff_minmax_moy(double mint, double maxt, double moyenne) {
 
 void aff_nb_iter(int nb_iter) {
 
+    // Imprime le nombre d'itération
     gotoxy(COL_DROITE, LINGNE_INFO_TABLE + 1);
     printf("Simulation terminee apres %d iterations.\n", nb_iter);
 }
@@ -270,7 +272,7 @@ double valider_reel(const char* message, double b_min, double b_max) {
         printf("%s (entre %.2lf et %.2lf) : ", message, b_min, b_max);
         scanf("%lf", &valeur);
         FFLUSH(); 
-        gotoxy(col_affichage, ligne_affichage); // Efface
+        gotoxy(col_affichage, ligne_affichage); // Imprime efface
         printf("                                                                   "); 
 
         if (valeur < b_min || valeur > b_max) {
@@ -336,7 +338,10 @@ void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, dou
     do {
         // Déterminer la couleur de fond en fonction de la température actuelle
         couleur_de_fond = (int)((plaque[posy][posx] - *mint) / ecart);
-        if (couleur_de_fond >= NB_COUL) couleur_de_fond = NB_COUL - 1;
+
+        if (couleur_de_fond >= NB_COUL) {
+            couleur_de_fond = NB_COUL - 1;
+        }
 
         textbackground(COULEURS[couleur_de_fond]);
 
@@ -358,12 +363,15 @@ void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, dou
             case 72:  // Flèche haut
                 if (posy > 0) posy--;
                 break;
+
             case 80:  // Flèche bas
                 if (posy < dimy - 1) posy++;
                 break;
+
             case 75:  // Flèche gauche
                 if (posx > 0) posx--;
                 break;
+
             case 77:  // Flèche droite
                 if (posx < dimx - 1) posx++;
                 break;
