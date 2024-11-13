@@ -16,178 +16,266 @@ Voici les sous-fonctions:
 #include <stdio.h>
 
 void lire_fichier(FILE* fichier, t_matrice plaque, t_matbool pos_fixes,
-    int* dimy, int* dimx, double* mint, double* maxt) {
+	int* dimy, int* dimx, double* mint, double* maxt) {
 
-    int i, j, nb = 0;
+	int i, j, nb = 0;
 
-    // Lecture des dimensions de la matrice
-    fscanf(fichier, "%d %d", dimy, dimx);
+	// Lecture des dimensions de la matrice
+	fscanf(fichier, "%d %d", dimy, dimx);
 
-    // Initialisation des valeurs min et max
-    *mint = MAXTEMP;  // Valeur arbitrairement grande pour min
-    *maxt = -MAXTEMP; // Valeur arbitrairement petite pour max
+	// Initialisation des valeurs min et max
+	*mint = MAXTEMP;  // Valeur arbitrairement grande pour min
+	*maxt = -MAXTEMP; // Valeur arbitrairement petite pour max
 
-    // Remplir la matrice avec les températures et calculer min et max
-    for (i = 0; i < *dimy; ++i) {
-        for (j = 0; j < *dimx; ++j) {
-            fscanf(fichier, "%lf", &plaque[i][j]);
-            nb++;
-            // Mettre à jour les températures min et max
-            if (plaque[i][j] < *mint) {
-                *mint = plaque[i][j];
-            }
-            if (plaque[i][j] > *maxt) {
-                *maxt = plaque[i][j];
-            }
+	// Remplir la matrice avec les températures et calculer min et max
+	for (i = 0; i < *dimy; ++i) {
+		for (j = 0; j < *dimx; ++j) {
+			fscanf(fichier, "%lf", &plaque[i][j]);
+			nb++;
+			// Mettre à jour les températures min et max
+			if (plaque[i][j] < *mint) {
+				*mint = plaque[i][j];
+			}
+			if (plaque[i][j] > *maxt) {
+				*maxt = plaque[i][j];
+			}
 
-            // Fixer les bords de la matrice comme positions fixes
-            if (i == 0 || i == (*dimy - 1) || j == 0 || j == (*dimx - 1)) {
-                pos_fixes[i][j] = 1;
-            }
-            else {
-                pos_fixes[i][j] = 0;
-            }
-        }
-    }
-    fclose(fichier);
+			// Fixer les bords de la matrice comme positions fixes
+			if (i == 0 || i == (*dimy - 1) || j == 0 || j == (*dimx - 1)) {
+				pos_fixes[i][j] = 1;
+			}
+			else {
+				pos_fixes[i][j] = 0;
+			}
+		}
+	}
+	fclose(fichier);
 }
 
 /*=========================================================*/
 
 double moyenne_voisins(const t_matrice plaque, int y, int x, int mode) {
-    double somme = 0;
-    int n = 0;
-    int i;
-    int j;
-    if (mode == 4) { // Calcul avec mode voisin 4
-        if (y > 0) {
-            somme += plaque[y - 1][x];
-            n++;
-        }
-        if (y < MAXLIG - 1) {
-            somme += plaque[y + 1][x];
-            n++;
-        }
-        if (x > 0) {
-            somme += plaque[y][x - 1];
-            n++;
-        }
-        if (x < MAXCOL - 1) {
-            somme += plaque[y][x + 1];
-            n++;
-        }
+	double somme = 0;
+	int n = 0;
+	int i;
+	int j;
+	if (mode == 4) { // Calcul avec mode voisin 4
+		if (y > 0) {
+			somme += plaque[y - 1][x]; // Addition de celui au sud
+			n++;
+		}
+		if (y < MAXLIG - 1) {
+			somme += plaque[y + 1][x]; // Addition de celui au nord
+			n++;
+		}
+		if (x > 0) {
+			somme += plaque[y][x - 1]; // Addition de celui à l'ouest
+			n++;
+		}
+		if (x < MAXCOL - 1) {
+			somme += plaque[y][x + 1]; // Addition de celui à l'est
+			n++;
+		}
 
-        return (somme / n);
-    }
-    else if (mode == 8) { // Calcul avec mode voisin 8
-        for (i = -1; i <= 1; i++) {
-            for (j = -1; j <= 1; j++) {
-                if (!(i == 0 && j == 0)) {
-                    if (y + i >= 0 && y + i < MAXLIG && x + j >= 0 && x + j < MAXCOL) {
-                        somme += plaque[y + i][x + j];
-                        n++;
-                    }
-                }
-            }
-        }
-        return (somme / n);
-    }
-    return 0.0;
+		return (somme / n); //Somme divisé par 4
+	}
+	else if (mode == 8) { // Calcul avec mode voisin 8
+		for (i = -1; i <= 1; i++) { 
+			for (j = -1; j <= 1; j++) { 
+				if (!(i == 0 && j == 0)) {
+					if (y + i >= 0 && y + i < MAXLIG && x + j >= 0 && x + j < MAXCOL) {
+						somme += plaque[y + i][x + j];
+						n++;
+					}
+				}
+			}
+		}
+		return (somme / n);
+	}
+	return 0.0;
 }
 
 /*=========================================================*/
 
 int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
-    t_matbool pos_fixes, int dimy, int dimx, int mode,
-    double epsilon, double coeff) {
+	t_matbool pos_fixes, int dimy, int dimx, int mode,
+	double epsilon, double coeff) {
 
-    int j;
-    int i;
+	int j;
+	int i;
 
-    int equilibre = 1;     // Variable pour vérifier si l'équilibre est atteint
+	int equilibre = 1;     // Variable pour vérifier si l'équilibre est atteint
 
 
-    for (i = 0; i < dimy; ++i) {
-        for (j = 0; j < dimx; ++j) {
-            if (pos_fixes[i][j] == 0) { 
-                /* Calcul de la nouvelle valeur en fonction
-                de la valeur actuelle et de la moyenne des voisins*/
-                nouv_plaque[i][j] = (plaque[i][j] * coeff) +
-                    (moyenne_voisins(plaque, i, j, mode)) * (1.0 - coeff);
-                // Si la différence dépasse epsilon
-                if ((nouv_plaque[i][j] - plaque[i][j]) > epsilon) {
-                    equilibre = 0;
-                }
-            }
-            else {
-                nouv_plaque[i][j] = plaque[i][j];
-            }
-        }
-    }
-    if (equilibre == 0) {
-        return 0;
-    }
-    else {
-        return 1;
-    }
+	for (i = 0; i < dimy; ++i) {
+		for (j = 0; j < dimx; ++j) {
+			if (pos_fixes[i][j] == 0) {
+				/* Calcul de la nouvelle valeur en fonction
+				de la valeur actuelle et de la moyenne des voisins*/
+				nouv_plaque[i][j] = (plaque[i][j] * coeff) +
+					(moyenne_voisins(plaque, i, j, mode)) * (1.0 - coeff);
+				// Si la différence dépasse epsilon
+				if ((nouv_plaque[i][j] - plaque[i][j]) > epsilon) {
+					equilibre = 0;
+				}
+			}
+			else {
+				nouv_plaque[i][j] = plaque[i][j];
+			}
+		}
+	}
+	if (equilibre == 0) {
+		return 0;
+	}
+	else {
+		return 1;
+	}
 
 }
 
 /*=========================================================*/
 
 double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
-    int dimy, int dimx, double* mint, double* maxt) {
+	int dimy, int dimx, double* mint, double* maxt) {
 
-    double somme = 0.0;
-    int i;
-    int j;
+	double somme = 0.0;
+	int i;
+	int j;
 
-    // Initialisation des valeurs min et max
-    *mint = MAXTEMP;  // Valeur arbitrairement grande pour min
-    *maxt = -MAXTEMP; // Valeur arbitrairement petite pour max
+	// Initialisation des valeurs min et max
+	*mint = MAXTEMP;  // Valeur arbitrairement grande pour min
+	*maxt = -MAXTEMP; // Valeur arbitrairement petite pour max
 
-    for (i = 0; i < dimy; ++i) {
-        for (j = 0; j < dimx; ++j) {
-            plaque[i][j] = nouv_plaque[i][j];
+	for (i = 0; i < dimy; ++i) {
+		for (j = 0; j < dimx; ++j) {
+			plaque[i][j] = nouv_plaque[i][j];
 
-            // Mettre à jour les températures min et max
-            if (plaque[i][j] < *mint) {
-                *mint = plaque[i][j];
-            }
-            if (plaque[i][j] > *maxt) {
-                *maxt = plaque[i][j];
-            }
+			// Mettre à jour les températures min et max
+			if (plaque[i][j] < *mint) {
+				*mint = plaque[i][j];
+			}
+			if (plaque[i][j] > *maxt) {
+				*maxt = plaque[i][j];
+			}
 
-            somme += plaque[i][j];
-        }
-    }
-    return somme / (dimx * dimy);
+			somme += plaque[i][j];
+		}
+	}
+	return somme / (dimx * dimy);
 }
 
 /*=========================================================*/
 
-void test_lire_fichier(void);
-
 void test_moyenne_voisins() {
 
-    double moy_4;
-    double moy_8;
-    // Exemple de plaque 3X3
-    t_matrice plaque = { 
-        {30.0, 32.0, 34.0},
-        {29.0, 28.0, 27.0},
-        {25.0, 26.0, 28.0}
-    };
+	double moy_4;
+	double moy_8;
+	/*=========================================================*/
 
-    // Test avec mode voisin 4
-    moy_4 = moyenne_voisins(plaque, 1, 1, 4);
-    assert(moy_4 == (29.0 + 32.0 + 26.0 + 27.0) / 4.0);
+	// Exemple 1ière iteration :	
+	t_matrice plaque1 = {
+		{100.0, 100.0, 100.0, 100.0},
+		{100.0,  40.0,  60.0, 200.0},
+		{100.0,  60.0,  80.0, 200.0},
+		{200.0, 200.0, 200.0, 200.0}
+	};
 
-    // Test avec mode voisin 8 (tous les voisins)
-    moy_8 = moyenne_voisins(plaque, 1, 1, 8);
-    assert(moy_8 == (30.0 + 32.0 + 34.0 + 29.0 + 28.0 + 27.0 + 25.0 + 26.0) / 8.0); 
+	// Test avec mode voisin 4
+	moy_4 = moyenne_voisins(plaque1, 1, 1, 4);
+	assert(moy_4 == (100.0 + 100.0 + 60.0 + 60.0) / 4.0);
+
+	// Test avec mode voisin 8 (tous les voisins)
+	moy_8 = moyenne_voisins(plaque1, 1, 1, 8);
+	assert(moy_8 == (100.0 + 100.0 + 100.0 + 60.0 + 80.0 + 60.0 + 100.0 + 100.0) / 8.0);
+
+	/*=========================================================*/
+
+	// Exemple 2ieme iteration :	
+	t_matrice plaque2 = {
+		{100.0,	100.0,	100.0,	100.0},
+		{100.0,	 72.0,	 96.0,	200.0},
+		{100.0,  96.0,	120.0,	200.0},
+		{200.0, 200.0,	200.0,	200.0}
+	};
+
+	// Test avec mode voisin 4
+	moy_4 = moyenne_voisins(plaque2, 1, 1, 4);
+	assert(moy_4 == (100.0 + 100.0 + 96.0 + 96.0) / 4.0);
+
+	// Test avec mode voisin 8 (tous les voisins)
+	moy_8 = moyenne_voisins(plaque2, 1, 1, 8);
+	assert(moy_8 == (100.0 + 100.0 + 100.0 + 96.0 + 120.0 + 96.0 + 100.0 + 100.0) / 8.0);
+
+
+	/*=========================================================*/
+
+	// Exemple 3ieme iteration :	
+	t_matrice plaque3 = {
+		{100.0,	100.0,	100.0,	100.0},
+		{100.0,	 92.8,	117.6,	200.0},
+		{100.0,  117.6,	142.4,	200.0},
+		{200.0, 200.0,	200.0,	200.0}
+	};
+
+	// Test avec mode voisin 4
+	moy_4 = moyenne_voisins(plaque3, 1, 1, 4);
+	assert(moy_4 == (100.0 + 100.0 + 117.6 + 117.6) / 4.0);
+
+	// Test avec mode voisin 8 (tous les voisins)
+	moy_8 = moyenne_voisins(plaque3, 1, 1, 8);
+	assert(moy_8 == (100.0 + 100.0 + 100.0 + 117.6 + 142.4 + 117.6 + 100.0 + 100.0) / 8.0);
+
+	/*=========================================================*/
+
+	// Exemple 4ieme iteration :	
+	t_matrice plaque4 = {
+		{100.0,	100.0,	100.0,	100.0},
+		{100.0,	105.6,	130.6,	200.0},
+		{100.0, 130.6,	155.5,	200.0},
+		{200.0, 200.0,	200.0,	200.0}
+	};
+
+	// Test avec mode voisin 4
+	moy_4 = moyenne_voisins(plaque4, 2, 2, 4);
+	assert(moy_4 == (130.6 + 130.6 + 200.0 + 200.0) / 4.0);
+
+	// Test avec mode voisin 8 (tous les voisins)
+	moy_8 = moyenne_voisins(plaque4, 2, 1, 8);
+	assert(moy_8 == (100.0 + 105.6 + 130.6 + 155.5 + 200.0 + 200.0 + 200.0 + 100.0) / 8.0);
+
+	/*=========================================================*/
+
+	// Exemple 5ieme iteration :	
+	t_matrice plaque5 = {
+		{100.0,	100.0,	100.0,	100.0},
+		{100.0,	113.3,	138.3,	200.0},
+		{100.0, 138.3,	163.3,	200.0},
+		{200.0, 200.0,	200.0,	200.0}
+	};
+
+	// Test avec mode voisin 4
+	moy_4 = moyenne_voisins(plaque5, 1, 2, 4);
+	assert(moy_4 == (113.3 + 100.0 + 200.0 + 163.3) / 4.0);
+
+	// Test avec mode voisin 8 (tous les voisins)
+	moy_8 = moyenne_voisins(plaque5, 2, 1, 8);
+	assert(moy_8 == (100.0 + 113.3 + 138.3 + 163.3 + 200.0 + 200.0 + 200.0 + 100.0) / 8.0);
+
+	/*=========================================================*/
+
+	// Exemple 6ieme iteration :	
+	t_matrice plaque6 = {
+		{100.0,	100.0,	100.0,	100.0},
+		{100.0,	118.8,	143.0,	200.0},
+		{100.0, 143.0,	168.0,	200.0},
+		{200.0, 200.0,	200.0,	200.0}
+	};
+
+	// Test avec mode voisin 4
+	moy_4 = moyenne_voisins(plaque6, 1, 1, 4);
+	assert(moy_4 == (100.0 + 100.0 + 143.0 + 143.0) / 4.0);
+
+	// Test avec mode voisin 8 (tous les voisins)
+	moy_8 = moyenne_voisins(plaque6, 1, 1, 8);
+	assert(moy_8 == (100.0 + 100.0 + 100.0 + 143.0 + 168.0 + 143.0 + 100.0 + 100.0) / 8.0);
 }
-
-void test_calculer_nouv_plaque(void);
-
-void test_copier_nouv_plaque(void);
