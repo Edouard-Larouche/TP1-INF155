@@ -163,3 +163,31 @@ double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
     }
     return somme / (dimx * dimy);
 }
+
+/*=========================================================*/
+
+void test_lire_fichier(void);
+
+void test_moyenne_voisins() {
+
+    double moy_4;
+    double moy_8;
+    // Exemple de plaque 3X3
+    t_matrice plaque = { 
+        {30.0, 32.0, 34.0},
+        {29.0, 28.0, 27.0},
+        {25.0, 26.0, 28.0}
+    };
+
+    // Test avec mode voisin 4
+    moy_4 = moyenne_voisins(plaque, 1, 1, 4);
+    assert(moy_4 == (29.0 + 32.0 + 26.0 + 27.0) / 4.0);
+
+    // Test avec mode voisin 8 (tous les voisins)
+    moy_8 = moyenne_voisins(plaque, 1, 1, 8);
+    assert(moy_8 == (30.0 + 32.0 + 34.0 + 29.0 + 28.0 + 27.0 + 25.0 + 26.0) / 8.0); 
+}
+
+void test_calculer_nouv_plaque(void);
+
+void test_copier_nouv_plaque(void);
