@@ -1,3 +1,15 @@
+/*
+Par: William Chung et Edouard Larouche
+Date : Octobre 2024 - Novembre 2024
+
+Ce module implémente les fonctions pour la gestion de la plaque thermique.
+Voici les sous-fonctions:
+- lire_fichier: Lit un fichier et initialise la plaque et ses dimensions.
+- moyenne_voisins: Calcule la température moyenne des voisins d'une cellule.
+- calculer_nouv_plaque: Calcule la nouvelle plaque de températures et vérifie l'équilibre.
+- copier_nouv_plaque: Copie la nouvelle plaque et met à jour les min, max et la moyenne.
+*/
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "plaque_lib.h"
