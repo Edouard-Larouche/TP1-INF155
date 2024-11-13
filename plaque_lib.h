@@ -138,10 +138,4 @@ double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
 
 /*=========================================================*/
 
-void test_lire_fichier(void);
-
 void test_moyenne_voisins(void);
-
-void test_calculer_nouv_plaque(void);
-
-void test_copier_nouv_plaque(void);
