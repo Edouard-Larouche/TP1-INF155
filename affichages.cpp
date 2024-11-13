@@ -1,8 +1,8 @@
-#define _CRT_SECURE_NO_WARNINGS
+
 #include "affichages.h"
 #include "WinConsole.h"
 #include <ctype.h> 
-#define NB_COUL  15 
+
 
 const int COULEURS[NB_COUL] = { RED, LIGHTRED, MAGENTA, LIGHTMAGENTA, BLUE,
 LIGHTBLUE, CYAN, LIGHTCYAN, GREEN, LIGHTGREEN, DARKGRAY, BROWN,
@@ -262,12 +262,12 @@ void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, dou
     int touche;
     double nouvelle_temp = 0;
     double ecart = (*maxt - *mint) / NB_COUL;  // Intervalle de température par couleur
-
+    int couleur_de_fond;
     do {
         // Déterminer la couleur de fond en fonction de la température actuelle
-        int couleur_index = (int)((plaque[posy][posx] - *mint) / ecart);
-        if (couleur_index >= NB_COUL) couleur_index = NB_COUL - 1;
-        textbackground(COULEURS[couleur_index]);
+        couleur_de_fond = (int)((plaque[posy][posx] - *mint) / ecart);
+        if (couleur_de_fond >= NB_COUL) couleur_de_fond = NB_COUL - 1;
+        textbackground(COULEURS[couleur_de_fond]);
 
         // Afficher le curseur « + » à la position actuelle
         gotoxy(posx, posy);
@@ -301,8 +301,10 @@ void pt_variation(t_matrice plaque, t_matbool pos_fixes, int dimy, int dimx, dou
 
     } while (touche != 13);  // Quitte la boucle avec Entrée (ASCII 13)
 
+    textbackground(BLACK);
+
     // Obtenir la nouvelle température pour la position actuelle
-    nouvelle_temp = valider_reel("Nouvelle température : ", *mint, *maxt);
+    nouvelle_temp = valider_reel("Nouvelle tempErature : ", *mint, *maxt);
     plaque[posy][posx] = nouvelle_temp;
 
     // Ajuster mint et maxt si nécessaire
