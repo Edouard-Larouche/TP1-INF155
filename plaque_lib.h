@@ -1,7 +1,8 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS // Pour désactiver des alertes 
 #include <stdio.h>
-
+#include <assert.h>
+#define MODE_TEST 0         // Permet d'effectuer les test unitaires
 #define MAXLIG  40         // Dimension maximale en lignes de la plaque
 #define MAXCOL  75         // Dimension maximale en colonnes de la plaque
 #define MAXTEMP 500        // Température maximale permise
@@ -135,3 +136,12 @@ int calculer_nouv_plaque(const t_matrice plaque, t_matrice nouv_plaque,
 double copier_nouv_plaque(t_matrice plaque, const t_matrice nouv_plaque,
     int dimy, int dimx, double* mint, double* maxt);
 
+/*=========================================================*/
+
+void test_lire_fichier(void);
+
+void test_moyenne_voisins(void);
+
+void test_calculer_nouv_plaque(void);
+
+void test_copier_nouv_plaque(void);
