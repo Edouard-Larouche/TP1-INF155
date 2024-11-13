@@ -1,5 +1,5 @@
 #pragma once
-
+#define _CRT_SECURE_NO_WARNINGS 
 #include <stdio.h>
 #define MAXLIG  40         // Dimension maximale en lignes de la plaque
 #define MAXCOL  75         // Dimension maximale en colonnes de la plaque
