@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+
 
 #include "affichages.h"
 
@@ -45,7 +45,7 @@ int main() {
 		}
 		case 'V': case '5': {
 			if (init) {
-				printf("Fonction de variation de température à implémenter.\n");
+				pt_variation(plaque, pos_fixes, dimy, dimx, &mint, &maxt, 0);
 			}
 			else {
 				printf("Veuillez d'abord charger les données.\n");
@@ -54,7 +54,7 @@ int main() {
 		}
 		case 'F': case '6': {
 			if (init) {
-				printf("Fonction de fixation de la température à implémenter.\n");
+				pt_variation(plaque, pos_fixes, dimy, dimx, &mint, &maxt, 1);
 			}
 			else {
 				printf("Veuillez d'abord charger les données.\n");
